@@ -4,6 +4,7 @@ from pprint import pprint
 
 from graph.chains.hallucination_grader import GradeHallucinations, hallucination_grader
 from graph.chains.retrieval_grader import GradeDocuments, retrieval_grader
+from graph.chains.router import question_router, RouteQuery
 from ingestion import get_retriever
 from graph.chains.generation import generation_chain
 
@@ -67,3 +68,15 @@ def test_hallucination_grader_answer_no() -> None:
         }
     )
     assert not res.binary_score
+
+
+def test_router_to_vector_store() -> None:
+    question = "agent memory"
+    res: RouteQuery = question_router.invoke({"question": question})
+    assert res.data_source == "vector_store"
+
+
+def test_router_to_websearch() -> None:
+    question = "Object Detection"
+    res: RouteQuery = question_router.invoke({"question": question})
+    assert res.data_source == "web_search"
